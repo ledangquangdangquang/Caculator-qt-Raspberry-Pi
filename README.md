@@ -15,15 +15,22 @@ and `Advance options` -> `Wayland` -> `X11`
 
 - Copy library requirement
 	```
-	wget ...
-	cp ...
+	wget https://github.com/ledangquangdangquang/Caculator-qt-Raspberry-Pi/releases/download/v0.0.0/libforpi.tar.xz
+	tar -xf libforpi.tar.xz
+	cp -r libforpi/* /usr/local/qt6/lib/
 	```
 
-Copy platforms     
+- Copy platforms     
 	```
-	wget ...
-	cp ...
+	wget https://github.com/ledangquangdangquang/Caculator-qt-Raspberry-Pi/releases/download/v0.0.0/platforms.tar.xz
+	tar -xf platforms.tar.xz
+	cp -r platforms /usr/local/qt6
+
 	```                             
+- Copy binary app
+	```
+	wget https://github.com/ledangquangdangquang/Caculator-qt-Raspberry-Pi/releases/download/v0.0.0/CalculatorRPI
+
 
 
 

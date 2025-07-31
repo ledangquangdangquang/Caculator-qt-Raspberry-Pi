@@ -1,0 +1,51 @@
+# Ignore build directories
+/build-*/
+
+# Ignore CMake build files
+CMakeCache.txt
+CMakeCache.txt.prev
+CMakeFiles/
+cmake_install.cmake
+CMakeLists.txt.user
+Makefile
+*.cmake
+*.ninja
+*.rules
+*.dir/
+
+# Ignore Qt Creator specific
+*.autosave
+*.user
+*.user.*
+.qmake.stash
+*.pro.user*
+
+# Ignore autogen (moc/ui) files
+*_autogen/
+moc_*.cpp
+ui_*.h
+qrc_*.cpp
+
+# Ignore object files and executables
+*.o
+*.obj
+*.so
+*.a
+*.dll
+*.exe
+*.out
+*.app
+
+# Ignore testing artifacts
+/Testing/
+
+# Editor/OS files
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
