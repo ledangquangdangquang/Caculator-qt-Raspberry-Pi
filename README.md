@@ -25,7 +25,6 @@ and `Advance options` -> `Wayland` -> `X11`
 	wget https://github.com/ledangquangdangquang/Caculator-qt-Raspberry-Pi/releases/download/v0.0.0/platforms.tar.xz
 	tar -xf platforms.tar.xz
 	cp -r platforms /usr/local/qt6
-
 	```                             
 - Copy binary app
 	```
