@@ -30,8 +30,13 @@ and `Advance options` -> `Wayland` -> `X11`
 - Copy binary app
 	```
 	wget https://github.com/ledangquangdangquang/Caculator-qt-Raspberry-Pi/releases/download/v0.0.0/CalculatorRPI
-
-
+	cp CalculatorRPI /usr/local/bin
+	```
+	
+- Run app
+	```
+	/usr/local/bin/CalculatorRPI
+	```
 
 
 
