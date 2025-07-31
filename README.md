@@ -11,7 +11,7 @@
 	```
 	sudo raspi-config
 	```
-and `Advance options` -> `Wayland` -> `X11`
+	and `Advance options` -> `Wayland` -> `X11`
 
 - Copy library requirement
 	```
