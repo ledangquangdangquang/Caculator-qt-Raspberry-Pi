@@ -9,7 +9,12 @@ A light weight calculator app for raspberry pi.
 
 
 ## Installation Guide
-
+> [!TIP]
+> ***Auto install*** 
+> ```
+> wget https://github.com/ledangquangdangquang/Caculator-qt-Raspberry-Pi/releases/download/v0.0.0/autoScript.sh
+> ./autoScript.sh
+> ```
 ### 1. Prepare directories and environment variables
 
 ```bash
