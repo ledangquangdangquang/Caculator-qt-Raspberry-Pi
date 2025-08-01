@@ -78,8 +78,14 @@ bool Evaluator::evaluate(const QVector<QString>& postfixTokens, Complex& result)
                 Complex b = stack.pop();
                 Complex a = stack.pop();
 
-                Complex res = operation->execute(a, b);
-                stack.push(roundComplex(res, decimals));
+                if ((token == "/" || token == "÷") && std::abs(b.real()) < 1e-12 && std::abs(b.imag()) < 1e-12) {
+                    qWarning() << "ERROR: Division by zero";
+                return false;
+            }
+
+            Complex res = operation->execute(a, b);
+            stack.push(roundComplex(res, decimals));
+
             }
         }
     }

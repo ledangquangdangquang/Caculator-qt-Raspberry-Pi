@@ -64,6 +64,7 @@ QVector<QString> Tokenizer::tokenize(const QString& expr) {
         "asin", "acos", "atan",
         "sinh", "cosh", "tanh",
         "log", "ln", "exp",
+        "abs", "Arg"
     };
 
 

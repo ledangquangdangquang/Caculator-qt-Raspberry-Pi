@@ -6,14 +6,16 @@
 #include <QShortcut>
 #include <cmath>
 #include <QMessageBox>
-#include <QPushButton>
 
 #include "MyPlainTextEdit.h"
 #include "operation/operationfactory.h"
 #include "parser/tokenizer.h"
 #include "parser/shuntingyard.h"
 #include "parser/evaluator.h"
-
+#include <QFileInfo>
+#include <QProcess>
+#include <QStringList>
+#define VERSION "v0.0.5"
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow)
@@ -55,8 +57,10 @@ MainWindow::MainWindow(QWidget *parent)
     QShortcut* commaShortcut = new QShortcut(QKeySequence(Qt::Key_Comma), this); // real enter
     connect(commaShortcut, &QShortcut::activated, this, &MainWindow::dotHandle);
 
-    // Menu
+    // Menu clear history
     connect(ui->actionClear_history, &QAction::triggered, this, &MainWindow::handleClearHistory);
+    // Menu update app
+    connect(ui->actionUpdate, &QAction::triggered, this, &MainWindow::handleUpdate);
     // About...
     connect(ui->actionAbout, &QAction::triggered, this, &MainWindow::handleAbout);
 
@@ -79,6 +83,27 @@ MainWindow::~MainWindow()
 {
     delete ui;
 }
+// Update handle
+void MainWindow::handleUpdate() {
+    QString appPath = QCoreApplication::applicationFilePath();  // đường dẫn AppImage hiện tại
+    QString dir = QFileInfo(appPath).absolutePath();             // thư mục đang chạy
+
+    QString script = QString(R"(
+        cd "%1"
+        exec bash -c '
+            echo "🛠 Đang cập nhật Calculator..."
+            wget -O Calculator-x86_64.AppImage https://github.com/ledangquangdangquang/Caculator-qt-linux/releases/latest/download/Calculator-x86_64.AppImage
+            chmod +x Calculator-x86_64.AppImage
+            echo "✅ Cập nhật xong. Đang khởi chạy lại..."
+            sleep 1
+            ./Calculator-x86_64.AppImage
+        '
+    )").arg(dir);
+
+    QProcess::startDetached("x-terminal-emulator", QStringList() << "-e" << script);
+    QApplication::quit(); // đóng app hiện tại
+}
+
 // Hide or Show when resize (done)
 void MainWindow::resizeEvent(QResizeEvent *event)
 {
@@ -104,14 +129,15 @@ void MainWindow::resizeEvent(QResizeEvent *event)
 }
 // Show about (done)
 void MainWindow::handleAbout() {
-    QMessageBox::information(this, "Calculator about", "Calculator v0.0.1\n(c) ledangquangdangquang");
+    QMessageBox::information(this, "Calculator about",
+                             QString("Calculator %1\n(c) ledangquangdangquang").arg(VERSION));
 }
 // Clear history (done)
 void MainWindow::handleClearHistory() {
     ui->plainHistory->clear();
 }
 // Fillter no a number (done)
-// Event when buttoon "=" cliked (NOT DONE)
+// Event when buttoon "=" cliked (DONE)
 void MainWindow::on_key_equals_clicked()
 {
     if (ui->plainTextEdit->toPlainText().isEmpty()) {
@@ -160,9 +186,12 @@ void MainWindow::on_key_equals_clicked()
     expr.replace(QChar(0x221A), "sqrt");
 
     // `%` handle (done)
-    static const QRegularExpression addMulPercent(R"((\d)(%))");
-    expr.replace(addMulPercent, R"(\1*\2)");
-    expr.replace("%", "0.01");
+//    static const QRegularExpression addMulPercent(R"((\d)(%))");
+//    expr.replace(addMulPercent, R"(\1*\2)");
+//    expr.replace("%", "0.01");
+    static const QRegularExpression percentRe(R"((\d+(?:\.\d+)?)%)");
+    expr.replace(percentRe, R"((\1*0.01))");
+
 
     // Pi handle (done)
     expr.replace("𝛑", "pi");
