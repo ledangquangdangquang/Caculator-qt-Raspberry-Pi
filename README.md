@@ -43,6 +43,7 @@ A light weight calculator app for raspberry pi.
 	
 - Run app
 	```
+	sudo chmod 777 /usr/local/qt6/lib/CalculatorRPI
 	/usr/local/bin/CalculatorRPI
 	```
 
