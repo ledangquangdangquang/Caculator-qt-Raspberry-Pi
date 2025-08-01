@@ -1,4 +1,5 @@
-# Caculator-qt-linux
+<h1 align="center"> Calculator for Raspberry Pi </h1>
+
 A light weight calculator app for raspberry pi.
 ## Install
 - Export $PATH
