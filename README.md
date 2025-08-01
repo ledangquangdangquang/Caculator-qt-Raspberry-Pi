@@ -42,6 +42,10 @@ A light weight calculator app for raspberry pi.
 
 
 ## Demo
+| Origin calculator | Full calculator|
+| -------------- | --------------- |
+| ![orign calculator](https://raw.githubusercontent.com/ledangquangdangquang/Caculator-qt-linux/refs/heads/main/assets/origin-calculator.png) | ![full calculator](https://raw.githubusercontent.com/ledangquangdangquang/Caculator-qt-linux/refs/heads/main/assets/full-calculator.png)|
+
 - ***Origin calculator:***
 
 ![orign calculator](https://raw.githubusercontent.com/ledangquangdangquang/Caculator-qt-linux/refs/heads/main/assets/origin-calculator.png) 
