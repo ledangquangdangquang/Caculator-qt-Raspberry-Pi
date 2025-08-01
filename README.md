@@ -25,6 +25,7 @@ A light weight calculator app for raspberry pi.
 	```
 	wget https://github.com/ledangquangdangquang/Caculator-qt-Raspberry-Pi/releases/download/v0.0.0/libforpi.tar.xz
 	tar -xf libforpi.tar.xz
+	mkdir /usr/local/qt6/lib/
 	cp -r libforpi/* /usr/local/qt6/lib/
 	```
 
