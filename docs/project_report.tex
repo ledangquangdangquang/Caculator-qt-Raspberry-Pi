@@ -1,0 +1,95 @@
+\documentclass[12pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[vietnamese]{babel}
+\usepackage{geometry}
+\usepackage{hyperref}
+\usepackage{enumitem}
+\geometry{margin=2.5cm}
+
+\title{Báo Cáo Dự Án: Máy Tính Cho Raspberry Pi}
+\author{Nhóm phát triển Calculator Qt}
+\date{\today}
+
+\begin{document}
+\maketitle
+\tableofcontents
+\newpage
+
+\section{Giới thiệu}
+\textbf{Calculator for Raspberry Pi} là một ứng dụng máy tính gọn nhẹ được xây dựng bằng Qt nhằm cung cấp trải nghiệm tính toán thân thiện cho các thiết bị Raspberry Pi. Ứng dụng kết hợp giao diện trực quan với một bộ xử lý biểu thức mạnh mẽ hỗ trợ cả số thực và số phức, cũng như nhiều hàm lượng giác, siêu lượng giác và đại số phức tạp. Dự án hướng đến việc triển khai nhanh chóng trên môi trường Raspbian hoặc các bản phân phối Linux tương thích với Qt.
+
+\section{Mục tiêu và phạm vi}
+\begin{itemize}[noitemsep]
+    \item Cung cấp một ứng dụng máy tính có thể chạy độc lập, tận dụng các thành phần giao diện Qt để phù hợp với màn hình cảm ứng hoặc bàn phím.
+    \item Hỗ trợ nhập liệu linh hoạt, bao gồm cả phím tắt bàn phím, nhằm tăng tốc độ làm việc khi thao tác trên thiết bị nhỏ gọn.\cite{mainwindow}
+    \item Xử lý được các biểu thức số học phức tạp với thứ tự ưu tiên chính xác, đồng thời hỗ trợ số phức và các hàm lượng giác/siêu lượng giác.\cite{parser}
+    \item Đem lại trải nghiệm cài đặt đơn giản thông qua script tự động hoặc các bước thủ công rõ ràng.\cite{readme}
+\end{itemize}
+
+\section{Tổng quan kiến trúc hệ thống}
+Dự án được tổ chức thành ba lớp chính: lớp giao diện người dùng, lớp xử lý biểu thức và lớp định nghĩa các phép toán. Sự tách biệt rõ ràng giúp dễ dàng mở rộng chức năng, đồng thời tạo thuận lợi cho việc bảo trì.
+
+\subsection{Giao diện và tương tác người dùng}
+Lớp \texttt{MainWindow} khởi tạo toàn bộ giao diện, đăng ký tín hiệu -- khe (signal/slot) cho từng nút bấm cũng như các phím tắt quan trọng như Enter, \texttt{=} và \texttt{.}.\cite{mainwindow} Khi người dùng nhấn nút, nội dung phù hợp sẽ được chèn vào vùng nhập liệu và con trỏ được đưa về đúng vị trí để tiếp tục soạn thảo.
+
+Vùng nhập liệu được xây dựng dựa trên lớp tuỳ biến \texttt{MyPlainTextEdit}, kế thừa từ \texttt{QPlainTextEdit}. Lớp này phát ra tín hiệu riêng khi người dùng nhấn Enter hoặc phím dấu chấm, giúp hệ thống xử lý nhanh hơn thay vì phải bắt các sự kiện trên toàn bộ cửa sổ.\cite{plainText}
+
+Ứng dụng còn cung cấp các tiện ích phụ trợ như xoá lịch sử, hiển thị hộp thoại giới thiệu phiên bản và cơ chế kiểm tra cập nhật bằng cách khởi chạy script tải bản AppImage mới nhất.\cite{mainwindow}
+
+\subsection{Bộ phân tích biểu thức}
+Chuỗi biểu thức người dùng nhập vào sẽ đi qua ba bước chính:\cite{mainwindow,parser}
+\begin{enumerate}[label=\arabic*.]
+    \item \textbf{Tiền xử lý và kiểm tra:} \texttt{MainWindow} kiểm tra ký tự không hợp lệ, cân bằng ngoặc và chuyển đổi các ký tự đặc biệt như \texttt{×}, \texttt{÷}, ký hiệu phần trăm hay hằng số $\pi$ thành dạng nội bộ.
+    \item \textbf{Tách token:} Lớp \texttt{Tokenizer} quét chuỗi để nhận diện số, hằng số, hàm đã biết và toán tử, đồng thời tự động chèn toán tử nhân trong các trường hợp ngầm định như $6(2)$ hay $2\pi$.\cite{tokenizer}
+    \item \textbf{Chuyển đổi sang hậu tố và đánh giá:} Thuật toán Shunting Yard chuyển biểu thức trung tố thành hậu tố (postfix) dựa trên độ ưu tiên toán tử.\cite{shunting} Lớp \texttt{Evaluator} sử dụng ngăn xếp để thực hiện phép tính, gọi tới \texttt{OperationFactory} nhằm lựa chọn phép toán thích hợp, sau đó làm tròn kết quả đến 5 chữ số thập phân để đảm bảo tính ổn định.\cite{evaluator}
+\end{enumerate}
+
+\subsection{Tầng phép toán}
+\texttt{OperationFactory} ánh xạ từng chuỗi đại diện toán tử hoặc hàm tới lớp triển khai tương ứng. Các phép toán nhị phân như cộng, trừ, nhân, chia, luỹ thừa hoặc modulo được xây dựng dựa trên kiểu dữ liệu \texttt{std::complex<double>}.\cite{operationfactory}
+
+Đối với các hàm một biến, dự án hỗ trợ đầy đủ sin, cos, tan (đơn vị độ), các hàm siêu lượng giác, căn bậc hai, logarit cơ số $e$ và 10, giá trị tuyệt đối cũng như các phép xử lý số phức như lấy phần thực, phần ảo, đối liên hợp và tính góc pha.\cite{operations}
+
+\section{Triển khai và cài đặt}
+Quá trình cài đặt trên Raspberry Pi bao gồm sáu bước chính, tương ứng với tài liệu hướng dẫn của dự án:\cite{readme}
+\begin{enumerate}[label=\arabic*.]
+    \item Chuẩn bị thư mục đích, phân quyền và thiết lập biến môi trường \texttt{LD\_LIBRARY\_PATH} cùng đường dẫn plugin Qt.
+    \item Chuyển đổi hệ thống hiển thị (Wayland/X11) khi cần để đảm bảo tương thích với Qt.
+    \item Tải và cài đặt gói thư viện Qt 6 được đóng gói sẵn cho Raspberry Pi.
+    \item Cài đặt bộ plugin nền tảng của Qt vào thư mục \texttt{/usr/local/qt6/plugins}.
+    \item Tải file thực thi \texttt{CalculatorRPI} và sao chép vào \texttt{/usr/local/bin} với quyền chạy phù hợp.
+    \item Khởi chạy ứng dụng qua câu lệnh \texttt{/usr/local/bin/CalculatorRPI}.
+\end{enumerate}
+Ngoài ra, nhóm phát triển còn cung cấp script tự động hoá toàn bộ chuỗi thao tác dành cho người dùng phổ thông.
+
+\section{Kiểm thử và đảm bảo chất lượng}
+Ứng dụng tích hợp nhiều lớp kiểm soát lỗi ngay trong quá trình nhập liệu và đánh giá biểu thức:\cite{mainwindow,evaluator}
+\begin{itemize}[noitemsep]
+    \item Ràng buộc ký tự hợp lệ, từ khoá được chấp nhận và cân bằng ngoặc ngay khi người dùng yêu cầu tính toán.
+    \item Phát hiện lỗi chia cho 0, căn bậc hai của số âm, logarit của số không dương và các điểm kỳ dị của hàm cotang.
+    \item Làm tròn kết quả số phức nhằm hạn chế sai số do tính toán số học dấu phẩy động, đồng thời trả về thông báo lỗi rõ ràng cho người dùng.
+\end{itemize}
+
+\section{Định hướng phát triển}
+Một số hướng mở rộng tiềm năng:
+\begin{itemize}[noitemsep]
+    \item Bổ sung kiểm thử tự động và bộ testcase chuẩn hoá để nâng cao độ tin cậy khi phát hành.
+    \item Mở rộng giao diện người dùng với tuỳ chọn hiển thị chế độ khoa học, đồ thị hoặc bàn phím ảo.
+    \item Tích hợp đa ngôn ngữ và thiết kế biểu tượng phù hợp với nhiều độ phân giải màn hình khác nhau.
+\end{itemize}
+
+\section{Kết luận}
+Calculator for Raspberry Pi kết hợp giao diện Qt thân thiện với hệ thống xử lý biểu thức mạnh mẽ, đem lại trải nghiệm tính toán giàu tính năng cho thiết bị nhỏ gọn. Kiến trúc phân lớp rõ ràng cùng tài liệu cài đặt chi tiết giúp dự án dễ dàng mở rộng, bảo trì và triển khai trong thực tế.
+
+\begin{thebibliography}{9}
+\bibitem{mainwindow}\texttt{mainwindow.cpp} -- Mã nguồn lớp \texttt{MainWindow} quản lý giao diện và xử lý tương tác.\footnote{Xem tệp \texttt{mainwindow.cpp} trong thư mục gốc của dự án.}
+\bibitem{parser}\texttt{parser/} -- Các thành phần tách token, chuyển đổi sang hậu tố và tính toán biểu thức.\footnote{Bao gồm các tệp \texttt{tokenizer.cpp}, \texttt{shuntingyard.cpp} và \texttt{evaluator.cpp}.}
+\bibitem{tokenizer}\texttt{parser/tokenizer.cpp} -- Thuật toán tách token và chèn phép nhân ngầm định.
+\bibitem{shunting}\texttt{parser/shuntingyard.cpp} -- Triển khai thuật toán Shunting Yard.
+\bibitem{evaluator}\texttt{parser/evaluator.cpp} -- Đánh giá biểu thức hậu tố với số phức.
+\bibitem{operationfactory}\texttt{operation/operationfactory.cpp} -- Ánh xạ chuỗi toán tử sang lớp phép toán.
+\bibitem{operations}\texttt{operation/} -- Danh mục các phép toán một biến và hai biến, bao gồm các hàm lượng giác, siêu lượng giác và phép toán trên số phức.
+\bibitem{plainText}\texttt{MyPlainTextEdit.cpp} -- Thành phần nhập liệu tuỳ biến cho phép bắt tín hiệu Enter và dấu chấm.
+\bibitem{readme}\texttt{README.md} -- Hướng dẫn cài đặt chi tiết trên Raspberry Pi.
+\end{thebibliography}
+
+\end{document}
